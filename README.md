@@ -75,7 +75,7 @@ atypica pulse list --category "AI Tech" --order-by heatScore
 List categories:
 
 ```bash
-atypica pulse categories --locale zh-CN
+atypica pulse categories --locale en-US
 ```
 
 Fetch one pulse:

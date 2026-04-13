@@ -77,8 +77,8 @@ async function enrichPulseSources(
 
 export function printPulseHelp(): void {
   printInfo("Usage:");
-  printInfo("  atypica pulse list [--category <name>] [--locale <en-US|zh-CN>] [--limit <n>] [--page <n>] [--order-by <heatScore|heatDelta|createdAt>] [--no-source-enrich]");
-  printInfo("  atypica pulse categories [--locale <en-US|zh-CN>]");
+  printInfo("  atypica pulse list [--category <name>] [--locale <en-US>] [--limit <n>] [--page <n>] [--order-by <heatScore|heatDelta|createdAt>] [--no-source-enrich]");
+  printInfo("  atypica pulse categories [--locale <en-US>]");
   printInfo("  atypica pulse get <id>");
   printInfo("");
   printInfo("Subcommands:");
@@ -88,7 +88,7 @@ export function printPulseHelp(): void {
   printInfo("");
   printInfo("List options:");
   printInfo("  --category <name>                           Filter by exact category name");
-  printInfo("  --locale <en-US|zh-CN>                      Filter by locale");
+  printInfo("  --locale <en-US>                            Filter by locale (zh-CN is temporarily unsupported)");
   printInfo("  --limit <n>                                 Page size (1-50)");
   printInfo("  --page <n>                                  Page number (>=1)");
   printInfo("  --order-by <heatScore|heatDelta|createdAt>  Sort field (desc)");
@@ -118,7 +118,7 @@ export function printPulseHelp(): void {
   printInfo("  atypica pulse get 3396 --json");
   printInfo("");
   printInfo("  # 7) List categories");
-  printInfo("  atypica pulse categories --locale zh-CN");
+  printInfo("  atypica pulse categories --locale en-US");
   printInfo("");
   printInfo("Agent tips:");
   printInfo("  - Use `--json` for machine-readable output");
@@ -147,6 +147,11 @@ export async function runPulseCommand(args: string[], context: CliContext): Prom
     const flags = parseFlags(rest);
     const params = new URLSearchParams();
 
+    const locale = stringFlag(flags, "locale");
+    if (locale === "zh-CN") {
+      throw new CliError("Locale zh-CN is temporarily unsupported. Please use en-US.");
+    }
+
     ["category", "locale", "limit", "page"].forEach((key) => {
       const value = stringFlag(flags, key);
       if (value) params.set(key, value);
@@ -166,6 +171,9 @@ export async function runPulseCommand(args: string[], context: CliContext): Prom
     const flags = parseFlags(rest);
     const params = new URLSearchParams();
     const locale = stringFlag(flags, "locale");
+    if (locale === "zh-CN") {
+      throw new CliError("Locale zh-CN is temporarily unsupported. Please use en-US.");
+    }
     if (locale) params.set("locale", locale);
 
     const response = await client.getPulseCategories(params);

@@ -16,7 +16,7 @@ export interface PulseListItem {
   title: string;
   content: string;
   category: string;
-  locale: "en-US" | "zh-CN";
+  locale: "en-US";
   heatScore: number | null;
   heatDelta: number | null;
   createdAt: string;
