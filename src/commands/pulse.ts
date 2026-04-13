@@ -2,6 +2,7 @@ import { ApiClient } from "../lib/api.js";
 import { requireApiKey } from "../lib/auth.js";
 import { resolveConfig } from "../lib/config.js";
 import { CliError } from "../lib/errors.js";
+import { printInfo } from "../lib/output.js";
 import { renderPulseCategories, renderPulseDetail, renderPulseList } from "../lib/pulse.js";
 import { CliContext } from "../types.js";
 
@@ -36,8 +37,32 @@ function stringFlag(flags: Map<string, string | boolean>, key: string): string |
   return typeof value === "string" ? value : undefined;
 }
 
+export function printPulseHelp(): void {
+  printInfo("Usage:");
+  printInfo("  atypica pulse list [--category <name>] [--locale <en-US|zh-CN>] [--limit <n>] [--page <n>] [--order-by <heatScore|heatDelta|createdAt>]");
+  printInfo("  atypica pulse categories [--locale <en-US|zh-CN>]");
+  printInfo("  atypica pulse get <id>");
+  printInfo("");
+  printInfo("Examples:");
+  printInfo("  atypica pulse list --limit 5 --locale en-US");
+  printInfo("  atypica pulse list --category \"AI Tech\" --order-by heatScore --json");
+  printInfo("  atypica pulse categories --locale zh-CN");
+  printInfo("  atypica pulse get 3396 --json");
+  printInfo("");
+  printInfo("Agent tips:");
+  printInfo("  - Use `--json` for machine-readable output");
+  printInfo("  - Use `--no-update-check` in automation");
+  printInfo("  - Set `ATYPICA_API_KEY` and `ATYPICA_BASE_URL` explicitly in CI or agent runtimes");
+}
+
 export async function runPulseCommand(args: string[], context: CliContext): Promise<void> {
   const [subcommand, ...rest] = args;
+
+  if (!subcommand || subcommand === "help" || subcommand === "--help" || subcommand === "-h") {
+    printPulseHelp();
+    return;
+  }
+
   const config = resolveConfig();
   const apiKey = requireApiKey(config);
   const client = new ApiClient({
@@ -84,7 +109,5 @@ export async function runPulseCommand(args: string[], context: CliContext): Prom
     return;
   }
 
-  throw new CliError(
-    "Usage: atypica pulse <list|categories|get>. Example: atypica pulse list --limit 5 --locale en-US",
-  );
+  throw new CliError("Unknown pulse subcommand. Run `atypica pulse help` for detailed usage.");
 }

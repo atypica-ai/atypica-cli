@@ -1,143 +1,176 @@
 # atypica CLI
 
+English README. For Simplified Chinese, see [README.zh-CN.md](./README.zh-CN.md).
+
 `atypica` is a command line client for the atypica open API.
 
 Current v1 scope:
 
 - Read Pulse data from `https://atypica.ai/api`
-- Guide users to generate and save a Personal API Key
-- Support human-readable and `--json` output
-- Check for newer CLI versions and provide an update command
+- Guide users through generating and saving a Personal API Key
+- Support both human-readable output and stable `--json` output
+- Check for newer CLI versions and provide a self-update command
 
-## 安装
+## Install
 
 ```bash
 npm install -g @atypica/cli
 ```
 
-也可以用：
+Or:
 
 ```bash
 pnpm add -g @atypica/cli
 ```
 
-## 快速开始
+## Quick Start
 
-首次配置：
+Interactive login:
 
 ```bash
 atypica auth login
 ```
 
-这个命令会：
+This flow will:
 
-- 引导你打开 `https://atypica.ai/account/api-keys`
-- 提示粘贴 Personal API Key
-- 本地保存到配置文件
-- 用一次真实 API 请求验证 key 是否可用
+- Point the user to `https://atypica.ai/account/api-keys`
+- Optionally open the browser
+- Prompt for a Personal API Key
+- Save the key locally
+- Validate the key with a real API call
 
-查看状态：
+Check current auth state:
 
 ```bash
 atypica auth status
 ```
 
-如果你已经有 key，也可以直接用环境变量：
+If you already have a key and want to avoid local state, use environment variables:
 
 ```bash
 export ATYPICA_API_KEY="atypica_xxx"
 atypica pulse list --limit 5
 ```
 
-## Pulse 命令
+## Commands
 
-列出热点：
+List pulses:
 
 ```bash
 atypica pulse list --limit 5 --locale en-US
 ```
 
-按分类过滤：
+Filter by category:
 
 ```bash
 atypica pulse list --category "AI Tech" --order-by heatScore
 ```
 
-获取分类：
+List categories:
 
 ```bash
 atypica pulse categories --locale zh-CN
 ```
 
-获取单条 pulse：
+Fetch one pulse:
 
 ```bash
 atypica pulse get 193
 ```
 
-脚本模式：
+Script-friendly mode:
 
 ```bash
 atypica pulse list --limit 3 --json
 ```
 
-## 更新
+Detailed command help:
 
-CLI 启动时会做非阻塞版本检查。手动检查/升级：
+```bash
+atypica help
+atypica auth help
+atypica pulse help
+```
+
+## Agent Usage
+
+The CLI is designed to be easy for other agents and automation systems to call.
+
+Recommendations:
+
+- Use `--json` whenever another tool or agent will parse the output.
+- Pass `--no-update-check` in automation to avoid extra stderr noise.
+- Prefer environment variables over interactive auth in CI:
+
+```bash
+ATYPICA_API_KEY="atypica_xxx" \
+ATYPICA_BASE_URL="https://atypica.ai/api" \
+atypica pulse list --limit 10 --json --no-update-check
+```
+
+- For deterministic queries, always set explicit filters such as `--limit`, `--locale`, and `--order-by`.
+- Treat non-zero exit codes as failures. Missing auth returns a non-zero exit code and a clear error message.
+
+## Update
+
+The CLI performs a non-blocking update check during normal usage.
+
+Manual update:
 
 ```bash
 atypica self-update
 atypica self-update --yes
 ```
 
-如果不想在某次运行时检查更新：
+Disable the update check for one run:
 
 ```bash
 atypica pulse list --no-update-check
 ```
 
-## 配置
+## Configuration
 
-默认配置文件位置：
+Default config file location:
 
 - macOS/Linux: `~/.config/atypica/config.json`
-- 如果设置了 `XDG_CONFIG_HOME`，则使用 `$XDG_CONFIG_HOME/atypica/config.json`
+- If `XDG_CONFIG_HOME` is set: `$XDG_CONFIG_HOME/atypica/config.json`
 
-支持环境变量覆盖：
+Supported environment variables:
 
 - `ATYPICA_API_KEY`
 - `ATYPICA_BASE_URL`
 - `ATYPICA_UPDATE_CHECK=0`
 
-默认 `ATYPICA_BASE_URL`：
+Default base URL:
 
 ```text
 https://atypica.ai/api
 ```
 
-本地保存的配置文件只存 CLI 配置；运行时如设置了 `ATYPICA_API_KEY` 或 `ATYPICA_BASE_URL`，环境变量优先。
+Environment variables override the saved local config at runtime.
 
 ## Example Output
 
 ```bash
 $ atypica pulse list --limit 3 --locale en-US
-ID   Category   Locale  Heat    Delta  Title
----  ---------  ------  ------  -----  -------------------------------
-193  Science    en-US   473.97  0.31   China QKD Network: quantum chip breakthrough
-...
+ID   Category     Locale  Heat                Delta  Title
+---- ------------ ------- ------------------- -----  ----------------------------------------------
+2918 Global News  en-US   453.2020651074475   -      US Pilot Rescue Uranium Claim
+2940 AI Business  en-US   262.90438014565154  -      OpenAI Codex plugin for Claude
+3396 AI Tech      en-US   323.6711869385739   -      bitnet.cpp: Microsoft 1-bit AI inference
 ```
 
 ```bash
-$ atypica pulse get 193 --json
+$ atypica pulse get 3396 --json
 {
-  "id": 193,
-  "title": "China QKD Network: quantum chip breakthrough",
-  "content": "Today's buzz highlights...",
-  "category": "Science",
+  "id": 3396,
+  "title": "bitnet.cpp: Microsoft 1-bit AI inference",
+  "content": "...",
+  "category": "AI Tech",
   "locale": "en-US",
-  "heatScore": 473.97,
-  "heatDelta": 0.31,
-  "createdAt": "2026-02-14T02:53:04.647Z",
+  "heatScore": 323.6711869385739,
+  "heatDelta": null,
+  "createdAt": "2026-04-10T14:00:39.241Z",
   "posts": []
 }
 ```
@@ -151,7 +184,7 @@ node --test dist/tests/*.test.js
 node dist/cli.js help
 ```
 
-## 开放 API 文档
+## Docs
 
 - Pulse docs: `https://atypica.ai/docs/pulse`
 - Developer docs: `https://atypica.ai/docs`

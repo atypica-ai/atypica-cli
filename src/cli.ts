@@ -2,8 +2,8 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { runAuthCommand } from "./commands/auth.js";
-import { runPulseCommand } from "./commands/pulse.js";
+import { printAuthHelp, runAuthCommand } from "./commands/auth.js";
+import { printPulseHelp, runPulseCommand } from "./commands/pulse.js";
 import { runSelfUpdateCommand } from "./commands/self-update.js";
 import { resolveConfig } from "./lib/config.js";
 import { CliError } from "./lib/errors.js";
@@ -47,17 +47,27 @@ function printHelp(): void {
   printInfo("atypica CLI");
   printInfo("");
   printInfo("Usage:");
-  printInfo("  atypica auth login");
-  printInfo("  atypica auth status");
-  printInfo("  atypica auth logout");
-  printInfo("  atypica pulse list [--category ...] [--locale ...] [--limit ...] [--page ...] [--order-by ...]");
-  printInfo("  atypica pulse categories [--locale ...]");
-  printInfo("  atypica pulse get <id>");
-  printInfo("  atypica self-update [--yes]");
+  printInfo("  atypica <command> <subcommand> [options]");
+  printInfo("");
+  printInfo("Core commands:");
+  printInfo("  auth         Configure and inspect Personal API Key access");
+  printInfo("  pulse        Query Pulse categories, lists, and details");
+  printInfo("  self-update  Print or run the recommended upgrade command");
+  printInfo("  help         Show global or command-specific help");
   printInfo("");
   printInfo("Global flags:");
-  printInfo("  --json");
-  printInfo("  --no-update-check");
+  printInfo("  --json             Output machine-readable JSON when supported");
+  printInfo("  --no-update-check  Disable the background version check for this run");
+  printInfo("");
+  printInfo("Examples:");
+  printInfo("  atypica auth login");
+  printInfo("  atypica pulse list --limit 5 --locale en-US");
+  printInfo("  atypica pulse get 3396 --json --no-update-check");
+  printInfo("");
+  printInfo("Agent tips:");
+  printInfo("  - Use `--json` for downstream parsing");
+  printInfo("  - Prefer env-based auth in automation: `ATYPICA_API_KEY=... atypica pulse list --json`");
+  printInfo("  - Run `atypica pulse help` or `atypica auth help` for detailed command help");
 }
 
 async function main(): Promise<void> {
@@ -66,6 +76,15 @@ async function main(): Promise<void> {
   const [command, ...rest] = args;
 
   if (!command || command === "help" || command === "--help" || command === "-h") {
+    const [maybeSubcommand] = rest;
+    if (maybeSubcommand === "auth") {
+      printAuthHelp();
+      return;
+    }
+    if (maybeSubcommand === "pulse") {
+      printPulseHelp();
+      return;
+    }
     printHelp();
     return;
   }

@@ -4,8 +4,30 @@ import { promptForApiKey } from "../lib/auth.js";
 import { printInfo, printJson } from "../lib/output.js";
 import { CliContext } from "../types.js";
 
+export function printAuthHelp(): void {
+  printInfo("Usage:");
+  printInfo("  atypica auth login");
+  printInfo("  atypica auth status");
+  printInfo("  atypica auth logout");
+  printInfo("");
+  printInfo("Commands:");
+  printInfo("  login   Start interactive API key setup and validate the key");
+  printInfo("  status  Show whether auth is configured and where it comes from");
+  printInfo("  logout  Remove the saved local API key");
+  printInfo("");
+  printInfo("Notes:");
+  printInfo("  - `ATYPICA_API_KEY` overrides the saved local config");
+  printInfo(`  - Generate keys at ${API_KEY_URL}`);
+  printInfo(`  - API docs: ${DOCS_URL}`);
+}
+
 export async function runAuthCommand(args: string[], context: CliContext): Promise<void> {
   const [subcommand] = args;
+
+  if (!subcommand || subcommand === "help" || subcommand === "--help" || subcommand === "-h") {
+    printAuthHelp();
+    return;
+  }
 
   if (subcommand === "login") {
     const config = resolveConfig();
@@ -63,5 +85,5 @@ export async function runAuthCommand(args: string[], context: CliContext): Promi
     return;
   }
 
-  printInfo("Usage: atypica auth <login|status|logout>");
+  printAuthHelp();
 }
