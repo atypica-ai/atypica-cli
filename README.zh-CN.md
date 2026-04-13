@@ -33,3 +33,7 @@ atypica pulse list --limit 20 --no-source-enrich
 - 英文主 README: [README.md](./README.md)
 - Pulse API 文档: `https://atypica.ai/docs/pulse`
 - Developer Docs: `https://atypica.ai/docs`
+
+## Skills
+
+本仓库同时提供 `SKILL.md`，可供 agent 直接引用。如果你正在构建需要调用 atypica API 的 agent，可直接参考该文件。

@@ -197,3 +197,7 @@ node dist/cli.js help
 
 - Pulse docs: `https://atypica.ai/docs/pulse`
 - Developer docs: `https://atypica.ai/docs`
+
+## Skills
+
+This repo also includes a `SKILL.md` for agent use. If you're building an agent that needs to interact with atypica APIs, you can reference it directly.
