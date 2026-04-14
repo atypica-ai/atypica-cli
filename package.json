@@ -21,6 +21,10 @@
     "test:src": "npm run build && npm run test",
     "prepublishOnly": "npm run build"
   },
+  "publishConfig": {
+    "access": "public",
+    "tag": "alpha"
+  },
   "devDependencies": {
     "@types/node": "^22.19.1",
     "typescript": "^5.9.3"
