@@ -1,15 +1,20 @@
-# atypica CLI
+![head-image](./head-image.webp)
 
-English README. For Simplified Chinese, see [README.zh-CN.md](./README.zh-CN.md).
+# Atypica CLI
 
-`atypica` is a command line client for the atypica open API.
+**Use the terminal to see what the world is talking about.**
 
-Current v1 scope:
+[atypica](https://atypica.ai) is the official command-line client for the **Pulse** API. Pulse is atypica’s trend-discovery system: it tracks how attention moves across the web so you can spot signals worth following—before they fade.
 
-- Read Pulse data from `https://atypica.ai/api`
-- Guide users through generating and saving a Personal API Key
-- Support both human-readable output and stable `--json` output
-- Check for newer CLI versions and provide a self-update command
+**Who it’s for**
+
+- **Creators** — find timely topics with real momentum  
+- **Researchers** — follow domains like AI, global news, or business  
+- **Developers & agents** — pipe trend data into scripts and automation  
+
+Simplified Chinese: [README.zh-CN.md](./README.zh-CN.md)
+
+---
 
 ## Install
 
@@ -17,40 +22,47 @@ Current v1 scope:
 npm install -g @atypica/cli
 ```
 
-Or:
+Or with pnpm:
 
 ```bash
 pnpm add -g @atypica/cli
 ```
 
-## Quick Start
+Requires **Node.js 20+**.
 
-Interactive login:
+---
+
+## 30-second quick start
 
 ```bash
-atypica auth login
+atypica auth login                              # sign in and save your API key
+atypica pulse list --limit 5 --locale zh-CN     # latest Chinese trending items
+atypica pulse get 3396                          # one pulse by ID (replace with a real ID)
 ```
 
-This flow will:
-
-- Point the user to `https://atypica.ai/account/api-keys`
-- Optionally open the browser
-- Prompt for a Personal API Key
-- Save the key locally
-- Validate the key with a real API call
-
-Check current auth state:
+Check auth without logging in again:
 
 ```bash
 atypica auth status
 ```
 
-If you already have a key and want to avoid local state, use environment variables:
+If you already have a key and prefer not to use saved config:
 
 ```bash
 export ATYPICA_API_KEY="atypica_xxx"
 atypica pulse list --limit 5
 ```
+
+---
+
+## What this CLI does (v1)
+
+- Reads Pulse data from `https://atypica.ai/api` (override with `ATYPICA_BASE_URL`)
+- Walks you through creating a **Personal API Key** and stores it locally
+- **Human-readable** tables by default, plus stable **`--json`** for scripts
+- Optional **version check** and **`atypica self-update`**
+
+---
 
 ## Commands
 
@@ -60,13 +72,13 @@ List pulses:
 atypica pulse list --limit 5 --locale en-US
 ```
 
-Skip source enrichment lookups for faster list output:
+Faster list (skip extra source lookups):
 
 ```bash
 atypica pulse list --limit 20 --page 2 --no-source-enrich
 ```
 
-Filter by category:
+Filter by category and sort:
 
 ```bash
 atypica pulse list --category "AI Tech" --order-by heatScore
@@ -84,13 +96,13 @@ Fetch one pulse:
 atypica pulse get 193
 ```
 
-Script-friendly mode:
+Machine-readable output:
 
 ```bash
 atypica pulse list --limit 3 --json
 ```
 
-Detailed command help:
+Help:
 
 ```bash
 atypica help
@@ -98,15 +110,15 @@ atypica auth help
 atypica pulse help
 ```
 
-## Agent Usage
+---
 
-The CLI is designed to be easy for other agents and automation systems to call.
+## Agent & automation
 
-Recommendations:
+The CLI is meant to be called from other tools and agents.
 
-- Use `--json` whenever another tool or agent will parse the output.
-- Pass `--no-update-check` in automation to avoid extra stderr noise.
-- Prefer environment variables over interactive auth in CI:
+- Use **`--json`** whenever something else will parse the output  
+- Use **`--no-update-check`** in CI to avoid extra stderr noise  
+- Prefer **environment variables** over interactive login in automation:
 
 ```bash
 ATYPICA_API_KEY="atypica_xxx" \
@@ -114,38 +126,44 @@ ATYPICA_BASE_URL="https://atypica.ai/api" \
 atypica pulse list --limit 10 --json --no-update-check
 ```
 
-- For deterministic queries, always set explicit filters such as `--limit`, `--locale`, and `--order-by`.
-- Treat non-zero exit codes as failures. Missing auth returns a non-zero exit code and a clear error message.
+- Set explicit **`--limit`**, **`--locale`**, and **`--order-by`** when you need repeatable results  
+- **Non-zero exit code** means failure (including missing or invalid auth)
 
-## Update
+---
 
-The CLI performs a non-blocking update check during normal usage.
+## Updates
 
-Manual update:
+The CLI runs a **non-blocking** update check during normal use.
+
+Manual upgrade:
 
 ```bash
 atypica self-update
 atypica self-update --yes
 ```
 
-Disable the update check for one run:
+Skip the check for one run:
 
 ```bash
 atypica pulse list --no-update-check
 ```
 
+---
+
 ## Configuration
 
-Default config file location:
+Default config file:
 
-- macOS/Linux: `~/.config/atypica/config.json`
+- macOS / Linux: `~/.config/atypica/config.json`  
 - If `XDG_CONFIG_HOME` is set: `$XDG_CONFIG_HOME/atypica/config.json`
 
-Supported environment variables:
+Environment variables (override saved config at runtime):
 
-- `ATYPICA_API_KEY`
-- `ATYPICA_BASE_URL`
-- `ATYPICA_UPDATE_CHECK=0`
+| Variable | Purpose |
+|----------|---------|
+| `ATYPICA_API_KEY` | Personal API key |
+| `ATYPICA_BASE_URL` | API base (default below) |
+| `ATYPICA_UPDATE_CHECK=0` | Disable update check |
 
 Default base URL:
 
@@ -153,9 +171,9 @@ Default base URL:
 https://atypica.ai/api
 ```
 
-Environment variables override the saved local config at runtime.
+---
 
-## Example Output
+## Example output
 
 ```bash
 $ atypica pulse list --limit 3 --locale en-US
@@ -184,20 +202,28 @@ $ atypica pulse get 3396 --json
 }
 ```
 
+---
+
 ## Development
 
 ```bash
 npm install
 npm run build
-node --test dist/tests/*.test.js
+npm test
 node dist/cli.js help
 ```
 
-## Docs
+(You can use `pnpm install` / `pnpm run build` / `pnpm test` if you prefer.)
 
-- Pulse docs: `https://atypica.ai/docs/pulse`
-- Developer docs: `https://atypica.ai/docs`
+---
 
-## Skills
+## Documentation
 
-This repo also includes a `SKILL.md` for agent use. If you're building an agent that needs to interact with atypica APIs, you can reference it directly.
+- Pulse: `https://atypica.ai/docs/pulse`  
+- Developer hub: `https://atypica.ai/docs`
+
+---
+
+## Agent skill
+
+This repo includes [`SKILL.md`](./SKILL.md) for agents that need to call atypica APIs—point your agent tooling at that file for prompts and conventions.
