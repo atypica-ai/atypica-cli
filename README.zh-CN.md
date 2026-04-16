@@ -108,6 +108,12 @@ atypica pulse categories --locale en-US
 atypica pulse get 193
 ```
 
+查看单条并获取可机读的热度历史：
+
+```bash
+atypica pulse get 193 --json
+```
+
 给脚本用（JSON）：
 
 ```bash
@@ -209,6 +215,16 @@ $ atypica pulse get 3396 --json
   "heatScore": 323.6711869385739,
   "heatDelta": null,
   "createdAt": "2026-04-10T14:00:39.241Z",
+  "history": [
+    {
+      "date": "2026-04-09",
+      "heatScore": 280.1
+    },
+    {
+      "date": "2026-04-10",
+      "heatScore": 323.6711869385739
+    }
+  ],
   "posts": []
 }
 ```

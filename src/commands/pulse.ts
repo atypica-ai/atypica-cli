@@ -91,7 +91,7 @@ export function printPulseHelp(): void {
   printInfo("  --locale <en-US>                            Filter by locale (zh-CN is temporarily unsupported)");
   printInfo("  --limit <n>                                 Page size (1-50)");
   printInfo("  --page <n>                                  Page number (>=1)");
-  printInfo("  --order-by <heatScore|heatDelta|createdAt>  Sort field (desc)");
+  printInfo("  --order-by <heatScore|heatDelta|createdAt>  Sort field (desc, default heatScore)");
   printInfo("  --no-source-enrich                          Skip extra detail fetch for source link column");
   printInfo("");
   printInfo("Global flags:");
@@ -157,8 +157,8 @@ export async function runPulseCommand(args: string[], context: CliContext): Prom
       if (value) params.set(key, value);
     });
 
-    const orderBy = stringFlag(flags, "order-by");
-    if (orderBy) params.set("orderBy", orderBy);
+    const orderBy = stringFlag(flags, "order-by") ?? "heatScore";
+    params.set("orderBy", orderBy);
 
     const response = await client.getPulseList(params);
     const shouldEnrichSource = !context.json && !booleanFlag(flags, "no-source-enrich");

@@ -110,6 +110,12 @@ Fetch one pulse:
 atypica pulse get 193
 ```
 
+Fetch one pulse with machine-readable heat history:
+
+```bash
+atypica pulse get 193 --json
+```
+
 Machine-readable output:
 
 ```bash
@@ -212,6 +218,16 @@ $ atypica pulse get 3396 --json
   "heatScore": 323.6711869385739,
   "heatDelta": null,
   "createdAt": "2026-04-10T14:00:39.241Z",
+  "history": [
+    {
+      "date": "2026-04-09",
+      "heatScore": 280.1
+    },
+    {
+      "date": "2026-04-10",
+      "heatScore": 323.6711869385739
+    }
+  ],
   "posts": []
 }
 ```

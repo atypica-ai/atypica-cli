@@ -22,7 +22,13 @@ export interface PulseListItem {
   createdAt: string;
 }
 
+export interface PulseHistoryPoint {
+  date: string;
+  heatScore: number;
+}
+
 export interface PulseDetail extends PulseListItem {
+  history?: PulseHistoryPoint[];
   posts: Array<Record<string, unknown>>;
 }
 

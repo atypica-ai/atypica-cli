@@ -74,6 +74,10 @@ function formatSourceValue(itemId: number, sourceUrlsById?: Map<number, string |
   return source.length > 42 ? `${source.slice(0, 39)}…` : source;
 }
 
+function sortHistoryByDate(history: NonNullable<PulseDetail["history"]>): NonNullable<PulseDetail["history"]> {
+  return [...history].sort((left, right) => new Date(left.date).getTime() - new Date(right.date).getTime());
+}
+
 export function renderPulseList(response: PulseListResponse, options: RenderPulseListOptions): void {
   if (options.json) {
     printJson(response);
@@ -154,6 +158,14 @@ export function renderPulseDetail(item: PulseDetail, json: boolean): void {
   printInfo("");
   printInfo("Content:");
   printInfo(item.content.trim());
+
+  if (item.history && item.history.length > 0) {
+    printInfo("");
+    printInfo(`Heat Trend (${item.history.length}):`);
+    sortHistoryByDate(item.history).forEach((point, index) => {
+      printInfo(`${index + 1}. ${highlightDate(point.date)}  ${highlightHeat(point.heatScore.toFixed(2))}`);
+    });
+  }
 
   const sourceUrls = extractTwitterSourceUrls(item.posts);
   if (sourceUrls.length > 0) {
