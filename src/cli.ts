@@ -81,10 +81,14 @@ function printHelp(): void {
   printInfo(section("What atypica gives you:"));
   printInfo(`  - ${tip("Pulse trend signals and global news coverage in one feed")}`);
   printInfo(`  - ${tip("AI-generated summaries for each pulse to speed up understanding")}`);
+  printInfo(`  - ${tip("Breakout detection via")} ${value("heatDelta")} ${tip("to surface suddenly exploding topics")}`);
+  printInfo(`  - ${tip("Per-pulse")} ${value("history")} ${tip("to inspect recent heat curves day by day")}`);
   printInfo(`  - ${tip("Traceable source posts, including original X / Twitter links")}`);
   printInfo("");
   printInfo(section("Agent tips:"));
   printInfo(`  - ${tip(`Use ${value("--json")} for downstream parsing`)}`);
+  printInfo(`  - ${tip(`Use ${cmd("atypica pulse list --order-by heatDelta")} to find sudden breakouts`)}`);
+  printInfo(`  - ${tip(`Use ${cmd("atypica pulse get <id> --json")} to retrieve the raw ${value("history")} series`)}`);
   printInfo(`  - ${tip(`Prefer env-based auth in automation: ${cmd("ATYPICA_API_KEY=... atypica pulse list --json")}`)}`);
   printInfo(`  - ${tip(`Run ${cmd("atypica pulse help")} or ${cmd("atypica auth help")} for detailed command help`)}`);
   printInfo(`  - ${tip(`Docs: ${link("https://atypica.ai/docs/pulse")} · ${link("https://atypica.ai/docs")}`)}`);

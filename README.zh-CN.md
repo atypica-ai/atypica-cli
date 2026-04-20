@@ -96,6 +96,12 @@ atypica pulse list --limit 20 --page 2 --no-source-enrich
 atypica pulse list --category "AI Tech" --order-by heatScore
 ```
 
+看突然爆火的话题：
+
+```bash
+atypica pulse list --order-by heatDelta --limit 10
+```
+
 列出分类：
 
 ```bash
@@ -144,6 +150,7 @@ atypica pulse list --limit 10 --json --no-update-check
 ```
 
 - 需要结果可复现时，请显式指定 **`--limit`**、**`--locale`**、**`--order-by`** 等  
+- 想看“突然爆火”的话题时，使用 **`--order-by heatDelta`**，它会按增量热度排序  
 - **非 0 退出码** 表示失败（含未配置或无效 Key）
 
 ---

@@ -25,7 +25,9 @@ const ANSI = {
 } as const;
 
 function supportsColor(): boolean {
-  return process.stdout.isTTY === true && process.env.NO_COLOR !== "1";
+  if (process.env.NO_COLOR === "1") return false;
+  if (process.env.FORCE_COLOR === "1" || process.env.CLICOLOR_FORCE === "1") return true;
+  return process.stdout.isTTY === true;
 }
 
 function paint(text: string, style: string): string {
@@ -118,6 +120,18 @@ export function highlightLink(text: string): string {
 
 export function highlightMuted(text: string): string {
   return paint(text, `${ANSI.dim}${ANSI.blue}`);
+}
+
+export function highlightLabel(text: string): string {
+  return paint(text, `${ANSI.bold}${ANSI.brightBlue}`);
+}
+
+export function highlightSection(text: string): string {
+  return paint(text, `${ANSI.bold}${ANSI.brightMagenta}`);
+}
+
+export function highlightIndex(text: string): string {
+  return paint(text, `${ANSI.dim}${ANSI.cyan}`);
 }
 
 export function highlightWarning(text: string): string {

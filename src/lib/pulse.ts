@@ -5,8 +5,11 @@ import {
   highlightDate,
   highlightDelta,
   highlightHeat,
+  highlightIndex,
+  highlightLabel,
   highlightLink,
   highlightMuted,
+  highlightSection,
   highlightTitle,
   printInfo,
   printJson,
@@ -132,12 +135,12 @@ export function renderPulseCategories(items: string[], json: boolean): void {
   }
 
   if (items.length === 0) {
-    printInfo("No categories found.");
+    printInfo(highlightMuted("No categories found."));
     return;
   }
 
   for (const item of items) {
-    printInfo(item);
+    printInfo(highlightCategory(item));
   }
 }
 
@@ -147,42 +150,42 @@ export function renderPulseDetail(item: PulseDetail, json: boolean): void {
     return;
   }
 
-  printInfo(`ID: ${item.id}`);
-  printInfo(`Title: ${highlightTitle(item.title)}`);
-  printInfo(`Category: ${highlightCategory(item.category)}`);
-  printInfo(`Locale: ${item.locale}`);
-  printInfo(`Heat Score: ${highlightHeat(formatValue(item.heatScore))}`);
+  printInfo(`${highlightLabel("ID:")} ${item.id}`);
+  printInfo(`${highlightLabel("Title:")} ${highlightTitle(item.title)}`);
+  printInfo(`${highlightLabel("Category:")} ${highlightCategory(item.category)}`);
+  printInfo(`${highlightLabel("Locale:")} ${highlightMuted(item.locale)}`);
+  printInfo(`${highlightLabel("Heat Score:")} ${highlightHeat(formatValue(item.heatScore))}`);
   const delta = formatDelta(item.heatDelta);
-  printInfo(`Heat Delta: ${highlightDelta(delta.text, delta.positive)}`);
-  printInfo(`Created At: ${highlightDate(item.createdAt)}`);
+  printInfo(`${highlightLabel("Heat Delta:")} ${highlightDelta(delta.text, delta.positive)}`);
+  printInfo(`${highlightLabel("Created At:")} ${highlightDate(item.createdAt)}`);
   printInfo("");
-  printInfo("Content:");
+  printInfo(highlightSection("Content:"));
   printInfo(item.content.trim());
 
   if (item.history && item.history.length > 0) {
     printInfo("");
-    printInfo(`Heat Trend (${item.history.length}):`);
+    printInfo(highlightSection(`Heat Trend (${item.history.length}):`));
     sortHistoryByDate(item.history).forEach((point, index) => {
-      printInfo(`${index + 1}. ${highlightDate(point.date)}  ${highlightHeat(point.heatScore.toFixed(2))}`);
+      printInfo(`${highlightIndex(`${index + 1}.`)} ${highlightDate(point.date)}  ${highlightHeat(point.heatScore.toFixed(2))}`);
     });
   }
 
   const sourceUrls = extractTwitterSourceUrls(item.posts);
   if (sourceUrls.length > 0) {
     printInfo("");
-    printInfo(`Source URLs (${sourceUrls.length}):`);
+    printInfo(highlightSection(`Source URLs (${sourceUrls.length}):`));
     sourceUrls.forEach((url, index) => {
-      printInfo(`${index + 1}. ${highlightLink(url)}`);
+      printInfo(`${highlightIndex(`${index + 1}.`)} ${highlightLink(url)}`);
     });
   }
 
   if (item.posts.length > 0) {
     printInfo("");
-    printInfo(`Posts (${item.posts.length}):`);
+    printInfo(highlightSection(`Posts (${item.posts.length}):`));
 
     item.posts.forEach((post, index) => {
       const content = typeof post.content === "string" ? post.content : JSON.stringify(post);
-      printInfo(`${index + 1}. ${content}`);
+      printInfo(`${highlightIndex(`${index + 1}.`)} ${content}`);
     });
   }
 }
