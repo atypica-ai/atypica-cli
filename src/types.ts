@@ -16,7 +16,7 @@ export interface PulseListItem {
   title: string;
   content: string;
   category: string;
-  locale: "en-US";
+  locale: "en-US" | "zh-CN";
   heatScore: number | null;
   heatDelta: number | null;
   createdAt: string;
@@ -30,6 +30,20 @@ export interface PulseHistoryPoint {
 export interface PulseDetail extends PulseListItem {
   history?: PulseHistoryPoint[];
   posts: Array<Record<string, unknown>>;
+  opinionSummary?: OpinionSummary | null;
+}
+
+export interface OpinionViewpoint {
+  stance: string;
+  summary: string;
+}
+
+export interface OpinionSummary {
+  summary: string;
+  overallSentiment?: "positive" | "negative" | "neutral" | "mixed";
+  keyViewpoints?: OpinionViewpoint[];
+  controversies?: string[];
+  generatedAt: string;
 }
 
 export interface PulsePagination {

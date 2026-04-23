@@ -81,6 +81,13 @@ function sortHistoryByDate(history: NonNullable<PulseDetail["history"]>): NonNul
   return [...history].sort((left, right) => new Date(left.date).getTime() - new Date(right.date).getTime());
 }
 
+function formatSentiment(value: NonNullable<NonNullable<PulseDetail["opinionSummary"]>["overallSentiment"]>): string {
+  return value
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join("-");
+}
+
 export function renderPulseList(response: PulseListResponse, options: RenderPulseListOptions): void {
   if (options.json) {
     printJson(response);
@@ -161,6 +168,36 @@ export function renderPulseDetail(item: PulseDetail, json: boolean): void {
   printInfo("");
   printInfo(highlightSection("Content:"));
   printInfo(item.content.trim());
+
+  if (item.opinionSummary) {
+    printInfo("");
+    printInfo(highlightSection("Opinion:"));
+    printInfo(item.opinionSummary.summary.trim());
+
+    if (item.opinionSummary.overallSentiment) {
+      printInfo(
+        `${highlightLabel("Overall Sentiment:")} ${highlightMuted(formatSentiment(item.opinionSummary.overallSentiment))}`,
+      );
+    }
+
+    if (item.opinionSummary.keyViewpoints && item.opinionSummary.keyViewpoints.length > 0) {
+      printInfo("");
+      printInfo(highlightSection(`Key Viewpoints (${item.opinionSummary.keyViewpoints.length}):`));
+      item.opinionSummary.keyViewpoints.forEach((viewpoint, index) => {
+        printInfo(
+          `${highlightIndex(`${index + 1}.`)} ${highlightLabel(`${viewpoint.stance}:`)} ${viewpoint.summary}`,
+        );
+      });
+    }
+
+    if (item.opinionSummary.controversies && item.opinionSummary.controversies.length > 0) {
+      printInfo("");
+      printInfo(highlightSection(`Controversies (${item.opinionSummary.controversies.length}):`));
+      item.opinionSummary.controversies.forEach((controversy, index) => {
+        printInfo(`${highlightIndex(`${index + 1}.`)} ${controversy}`);
+      });
+    }
+  }
 
   if (item.history && item.history.length > 0) {
     printInfo("");

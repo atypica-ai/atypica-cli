@@ -82,6 +82,15 @@ test("renderPulseDetail JSON mode preserves history payload", () => {
       { date: "2026-04-10", heatScore: 323.67 },
     ],
     posts: [],
+    opinionSummary: {
+      summary: "Most discussion is optimistic, but pricing power remains disputed.",
+      overallSentiment: "mixed",
+      keyViewpoints: [
+        { stance: "Bullish", summary: "Supporters expect rapid enterprise rollout." },
+      ],
+      controversies: ["Whether demand is durable beyond early adopters."],
+      generatedAt: "2026-04-10T14:10:00.000Z",
+    },
   };
 
   const output = captureStdout(() => {
@@ -89,6 +98,7 @@ test("renderPulseDetail JSON mode preserves history payload", () => {
   });
   const parsed = JSON.parse(output) as PulseDetail;
   assert.deepEqual(parsed.history, detail.history);
+  assert.deepEqual(parsed.opinionSummary, detail.opinionSummary);
 });
 
 test("renderPulseDetail plain mode prints heat trend points", () => {
@@ -106,6 +116,16 @@ test("renderPulseDetail plain mode prints heat trend points", () => {
       { date: "2026-04-09", heatScore: 280.1 },
     ],
     posts: [],
+    opinionSummary: {
+      summary: "Conversation is broadly constructive, with concerns around reliability.",
+      overallSentiment: "mixed",
+      keyViewpoints: [
+        { stance: "Positive", summary: "Teams see near-term productivity gains." },
+        { stance: "Skeptical", summary: "Critics think quality is still inconsistent." },
+      ],
+      controversies: ["Whether current product quality is production-ready."],
+      generatedAt: "2026-04-10T14:10:00.000Z",
+    },
   };
 
   const output = captureStdout(() => {
@@ -115,4 +135,9 @@ test("renderPulseDetail plain mode prints heat trend points", () => {
   assert.match(output, /Heat Trend \(2\):/);
   assert.match(output, /2026-04-09/);
   assert.match(output, /2026-04-10/);
+  assert.match(output, /Opinion:/);
+  assert.match(output, /Overall Sentiment:\s+Mixed/);
+  assert.match(output, /Key Viewpoints \(2\):/);
+  assert.match(output, /Positive:\s+Teams see near-term productivity gains\./);
+  assert.match(output, /Controversies \(1\):/);
 });
