@@ -47,9 +47,16 @@ pnpm add -g @atypica-ai/cli
 ## 30 秒上手
 
 ```bash
-atypica auth login                          # 登录，保存 API Key
 atypica pulse list --limit 5 --locale zh-CN  # 查看最新中文热点
 atypica pulse get 3396                      # 查看某条热点详情（请换成真实 ID）
+```
+
+Pulse 命令不登录也可以用。匿名访问偶尔可能遇到限流（`429`）。
+
+如需更高额度，可以登录并保存 API Key：
+
+```bash
+atypica auth login
 ```
 
 查看当前登录状态：
@@ -70,7 +77,7 @@ atypica pulse list --limit 5
 ## CLI 能做什么（v1）
 
 - 从 `https://atypica.ai/api` 读取 Pulse 数据（可用 `ATYPICA_BASE_URL` 覆盖）  
-- 引导你创建并本地保存 **Personal API Key**  
+- 不登录也可使用，并保留可选的 **Personal API Key** 配置入口以获得更高额度
 - 默认输出**人类可读表格**，也支持稳定的 **`--json`** 脚本输出  
 - 提供可选**版本检查**与 **`atypica self-update`** 自更新
 
@@ -141,6 +148,7 @@ atypica pulse help
 - CLI 设计目标之一就是被其他工具和 Agent 调用
 - 需要被程序解析时，请加 **`--json`**  
 - CI 里建议加 **`--no-update-check`**，减少 stderr 干扰  
+- Pulse 命令不配置 Key 也可运行，但匿名请求偶尔可能返回 **`429`**
 - 自动化场景优先用**环境变量**，不要交互式登录：
 
 ```bash
@@ -151,7 +159,7 @@ atypica pulse list --limit 10 --json --no-update-check
 
 - 需要结果可复现时，请显式指定 **`--limit`**、**`--locale`**、**`--order-by`** 等  
 - 想看“突然爆火”的话题时，使用 **`--order-by heatDelta`**，它会按增量热度排序  
-- **非 0 退出码** 表示失败（含未配置或无效 Key）
+- **非 0 退出码** 表示失败（例如 Key 无效、触发限流或参数错误）
 
 ---
 

@@ -24,13 +24,16 @@ atypica help
 
 ## Authentication
 
-The CLI requires a valid Personal API Key.
+Pulse commands can run without a Personal API Key. Anonymous usage may occasionally hit rate limits (`429`).
+
+Authentication is still supported and recommended for higher limits, automation, and more reliable repeated runs.
 
 ### Credential Safety Rules
 
 - Never ask the user to paste API keys into chat.
 - Never print, log, store, or echo secrets.
-- If auth is missing, ask the user to configure it locally outside the conversation.
+- If auth is missing, proceed with anonymous usage unless the user needs higher limits or repeatable automation.
+- If the API returns `429`, suggest configuring auth locally outside the conversation.
 - Do not show secret-bearing examples such as `ATYPICA_API_KEY=...` or `export ATYPICA_API_KEY=...`.
 
 **Local login (user runs this themselves):**
@@ -149,9 +152,10 @@ atypica pulse categories --locale en-US
 
 - Use `--json` for downstream parsing.
 - Prefer pre-provisioned environment variables in CI and agent runtimes.
+- Anonymous usage is allowed, but be prepared to retry later or ask for local auth setup after `429`.
 - Set explicit filters for deterministic results.
 - Keep secrets out of prompts, examples, and outputs.
-- Exit code `2`: missing or invalid API key.
+- Exit code `2`: invalid API key or auth-related failure.
 - Exit code `1`: bad argument or resource not found.
 
 ## Environment Variables

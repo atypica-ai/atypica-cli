@@ -1,5 +1,5 @@
 import { ApiClient } from "../lib/api.js";
-import { requireApiKey } from "../lib/auth.js";
+import { validateApiKeyFormat } from "../lib/auth.js";
 import { resolveConfig } from "../lib/config.js";
 import { CliError } from "../lib/errors.js";
 import { highlightCategory, highlightHeat, highlightLink, highlightMuted, highlightTitle, printInfo } from "../lib/output.js";
@@ -148,9 +148,12 @@ export async function runPulseCommand(args: string[], context: CliContext): Prom
   }
 
   const config = resolveConfig();
-  const apiKey = requireApiKey(config);
+  if (config.apiKey) {
+    validateApiKeyFormat(config.apiKey);
+  }
+
   const client = new ApiClient({
-    apiKey,
+    apiKey: config.apiKey,
     baseUrl: config.baseUrl ?? "",
   });
 

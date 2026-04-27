@@ -1,4 +1,7 @@
 import assert from "node:assert/strict";
+import { mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 import { runPulseCommand } from "../commands/pulse.js";
 
@@ -75,6 +78,62 @@ test("pulse list does not fetch per-item details by default", async () => {
       delete process.env.ATYPICA_BASE_URL;
     } else {
       process.env.ATYPICA_BASE_URL = originalBaseUrl;
+    }
+  }
+});
+
+test("pulse list works without configured auth", async () => {
+  const originalFetch = globalThis.fetch;
+  const originalApiKey = process.env.ATYPICA_API_KEY;
+  const originalBaseUrl = process.env.ATYPICA_BASE_URL;
+  const originalXdgConfigHome = process.env.XDG_CONFIG_HOME;
+  const requestedAuthorizations: Array<string | null> = [];
+
+  delete process.env.ATYPICA_API_KEY;
+  process.env.ATYPICA_BASE_URL = "https://example.com/api";
+  process.env.XDG_CONFIG_HOME = mkdtempSync(join(tmpdir(), "atypica-cli-test-"));
+  globalThis.fetch = async (input, init) => {
+    const url = String(input);
+    requestedAuthorizations.push(new Headers(init?.headers).get("authorization"));
+
+    if (url.startsWith("https://example.com/api/pulse?")) {
+      return new Response(JSON.stringify({
+        success: true,
+        data: [],
+        pagination: {
+          page: 1,
+          pageSize: 10,
+          total: 0,
+        },
+      }), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    }
+
+    throw new Error(`Unexpected request: ${url}`);
+  };
+
+  try {
+    await captureStdoutAsync(() => runPulseCommand(["list", "--limit", "10"], { json: false, updateCheck: false }));
+
+    assert.deepEqual(requestedAuthorizations, [null]);
+  } finally {
+    globalThis.fetch = originalFetch;
+    if (originalApiKey === undefined) {
+      delete process.env.ATYPICA_API_KEY;
+    } else {
+      process.env.ATYPICA_API_KEY = originalApiKey;
+    }
+    if (originalBaseUrl === undefined) {
+      delete process.env.ATYPICA_BASE_URL;
+    } else {
+      process.env.ATYPICA_BASE_URL = originalBaseUrl;
+    }
+    if (originalXdgConfigHome === undefined) {
+      delete process.env.XDG_CONFIG_HOME;
+    } else {
+      process.env.XDG_CONFIG_HOME = originalXdgConfigHome;
     }
   }
 });

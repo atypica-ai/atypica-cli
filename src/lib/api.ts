@@ -3,7 +3,7 @@ import { HttpError } from "./errors.js";
 import { parseJson } from "./json.js";
 
 export interface ApiClientOptions {
-  apiKey: string;
+  apiKey?: string;
   baseUrl: string;
 }
 
@@ -12,7 +12,7 @@ function trimSlash(url: string): string {
 }
 
 export class ApiClient {
-  private readonly apiKey: string;
+  private readonly apiKey?: string;
   private readonly baseUrl: string;
 
   constructor(options: ApiClientOptions) {
@@ -39,11 +39,16 @@ export class ApiClient {
   }
 
   private async getJson<T>(path: string): Promise<T> {
+    const headers: Record<string, string> = {
+      Accept: "application/json",
+    };
+
+    if (this.apiKey) {
+      headers.Authorization = `Bearer ${this.apiKey}`;
+    }
+
     const response = await fetch(`${this.baseUrl}${path}`, {
-      headers: {
-        Authorization: `Bearer ${this.apiKey}`,
-        Accept: "application/json",
-      },
+      headers,
     });
 
     const text = await response.text();

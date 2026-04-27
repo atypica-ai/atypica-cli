@@ -49,12 +49,19 @@ Requires **Node.js 20+**.
 ## 30-second quick start
 
 ```bash
-atypica auth login                              # sign in and save your API key
 atypica pulse list --limit 5 --locale zh-CN     # latest Chinese trending items
 atypica pulse get 3396                          # one pulse by ID (replace with a real ID)
 ```
 
-Check auth without logging in again:
+You can use Pulse commands without signing in. Anonymous usage may occasionally hit rate limits (`429`).
+
+For higher limits, sign in and save your API key:
+
+```bash
+atypica auth login
+```
+
+Check auth status without logging in again:
 
 ```bash
 atypica auth status
@@ -72,7 +79,7 @@ atypica pulse list --limit 5
 ## What this CLI does (v1)
 
 - Reads Pulse data from `https://atypica.ai/api` (override with `ATYPICA_BASE_URL`)
-- Walks you through creating a **Personal API Key** and stores it locally
+- Works without login, with optional **Personal API Key** setup for higher limits
 - **Human-readable** tables by default, plus stable **`--json`** for scripts
 - Optional **version check** and **`atypica self-update`**
 
@@ -144,6 +151,7 @@ The CLI is meant to be called from other tools and agents.
 
 - Use **`--json`** whenever something else will parse the output  
 - Use **`--no-update-check`** in CI to avoid extra stderr noise  
+- Pulse commands can run without auth, but anonymous requests may occasionally return **`429`**
 - Prefer **environment variables** over interactive login in automation:
 
 ```bash
@@ -154,7 +162,7 @@ atypica pulse list --limit 10 --json --no-update-check
 
 - Set explicit **`--limit`**, **`--locale`**, and **`--order-by`** when you need repeatable results  
 - Use **`--order-by heatDelta`** when you want breakout topics ranked by delta instead of total heat score  
-- **Non-zero exit code** means failure (including missing or invalid auth)
+- **Non-zero exit code** means failure (for example invalid auth, rate limits, or bad arguments)
 
 ---
 
